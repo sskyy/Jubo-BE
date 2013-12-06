@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Module file for menu_example.
+ */
+
+/**
+ * @defgroup menu_example Example: Menu
+ * @ingroup examples
+ * @{
+ * Demonstrates uses of the Menu APIs in Drupal.
+ *
+ * The Page Example module also talks about the menu system, as well
+ * as how to use menu arguments to generate pages.
+ *
+ * @see hook_menu()
+ * @see hook_menu_alter()
+ * @see hook_menu_link_alter()
+ * @see page_example
+ * @see page_example_menu()
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function current_user_menu() {
+  $items['custom/get_current_user'] = array(
+    'title' => 'Get Current User',
+
+    // Machine name of the menu in which the link should appear.
+    'menu_name' => 'primary-links',
+    'page callback' => 'echo_current_user',
+    'access callback' => TRUE,
+  );
+  return $items;
+}
+
+function echo_current_user(){
+  echo json_encode($GLOBALS['user']);
+}
