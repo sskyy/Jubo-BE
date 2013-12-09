@@ -35,14 +35,13 @@ class RESTServer {
   public function handle() {
     $controller = $this->getController();
 
-    // Parse the request data
-    $arguments = $this->getControllerArguments($controller);
-
     $formatter = $this->getResponseFormatter();
 
     services_set_server_info('resource_uri_formatter', array(&$this, 'uri_formatter'));
 
     try {
+      // Parse the request data
+      $arguments = $this->getControllerArguments($controller);
       $result = services_controller_execute($controller, $arguments);
     }
     catch (ServicesException $e) {
@@ -307,6 +306,10 @@ class RESTServer {
           $argument_source_keys = array_keys($argument_source);
           $source_name = reset($argument_source_keys);
           $argument_name = $argument_source[$source_name];
+          // Path arguments can be only integers. i.e.'path' => 0 and not 'path' => '0'.
+          if ($source_name == 'path') {
+            $argument_name = (int) $argument_name;
+          }
           if (isset($sources[$source_name][$argument_name])) {
             $arguments[$argument_number] = $sources[$source_name][$argument_name];
           }
@@ -482,7 +485,7 @@ class RESTServer {
     $operation = NULL;
 
     // For any HEAD request return response "200 OK".
-    if ($request_method == 'HEAD') {
+    if ($request_method == 'HEAD' || $request_method == 'OPTIONS') {
       return services_error('OK', 200);
     }
 
@@ -653,7 +656,7 @@ class RESTServer {
         break;
       default:
         if ($error_code >= 400 && $error_code < 600) {
-          $error_header_status_message = $error_code . ':' . $error_message;
+          $error_header_status_message = $error_code . ' :' . $error_message;
         }
         else {
           $error_header_status_message = '500 Internal Server Error: An error occurred (' . $error_code . '): ' . $error_message;

@@ -284,7 +284,9 @@ function _node_resource_create($node) {
   if (!isset($node['name'])) {
     // Assign username to the node from $user created at auth step.
     global $user;
-    $node['name'] = $user->name;
+    if (isset($user->name)) {
+      $node['name'] = $user->name;
+    }
   }
   if(!isset($node['language'])) {
     $node['language'] = LANGUAGE_NONE;
@@ -652,13 +654,13 @@ function _node_resource_attach_file($nid, $field_name, $attach, $field_values) {
       }
     }
 
-    $counter++;
     $node->{$field_name}[LANGUAGE_NONE][$counter] = (array)$file_obj;
     // Check the field display settings.
     if (isset($field['settings']['display_field'])) {
       // Set the display option.
       $node->{$field_name}[LANGUAGE_NONE][$counter]['display'] = $field['settings']['display_field'];
     }
+    $counter++;
   }
 
   node_save($node);
