@@ -337,3 +337,17 @@ function relation_endpoint_form_field_ui_field_overview_form_alter(&$form, $form
     );
   }
 }
+
+/**
+ * Implements hook_filed_entity_dependencies().
+ *
+ * Adding relation endpoints as dependencies.
+ */
+function relation_endpoint_field_entity_dependencies($entity_type, $entity, $field, $instance, $langcode, $endpoints) {
+  $dependencies = array();
+  foreach ($endpoints as $endpoint) {
+    $dependencies[] = array('type' => $endpoint['entity_type'], 'id' => $endpoint['entity_id']);
+  }
+
+  return $dependencies;
+}
